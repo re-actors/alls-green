@@ -89,7 +89,10 @@ runs:
       )
 
       if job_matrix_succeeded:
-          print('🎉 All of the required dependency jobs.', file=sys.stderr)
+          print(
+              '🎉 All of the required dependency jobs succeeded.',
+              file=sys.stderr,
+          )
       else:
           print(
               '😢 Some of the required to succeed jobs failed.',
