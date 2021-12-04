@@ -71,6 +71,8 @@ jobs:
     - package-linters
     - tests
 
+    runs-on: Ubuntu-latest
+
     steps:
     - name: Decide whether the needed jobs succeeded or failed
       uses: re-actors/alls-green@release/v1
