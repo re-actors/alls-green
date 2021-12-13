@@ -1,7 +1,11 @@
 #! /usr/bin/env python
 
+import functools
 import json
 import sys
+
+
+print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
 allowed_failures_raw_input = sys.argv[1]
@@ -35,20 +39,17 @@ job_matrix_succeeded = all(
 )
 
 
-print(
+print_to_stderr(
     '::set-output name=failure::{failed}'.
     format(failed=not job_matrix_succeeded),
-    file=sys.stderr,
 )
-print(
+print_to_stderr(
     '::set-output name=result::{result}'.
     format(result='success' if job_matrix_succeeded else 'failure'),
-    file=sys.stderr,
 )
-print(
+print_to_stderr(
     '::set-output name=success::{succeeded}'.
     format(succeeded=job_matrix_succeeded),
-    file=sys.stderr,
 )
 
 
@@ -59,32 +60,28 @@ allowed_to_fail_jobs_succeeded = all(
 
 
 if job_matrix_succeeded:
-    print(
+    print_to_stderr(
         '🎉 All of the required dependency jobs succeeded.',
-        file=sys.stderr,
     )
 else:
-    print(
+    print_to_stderr(
         '😢 Some of the required to succeed jobs failed.',
-        file=sys.stderr,
     )
 
 
 if jobs_allowed_to_fail and allowed_to_fail_jobs_succeeded:
-    print(
+    print_to_stderr(
         '🛈 All of the allowed to fail dependency jobs succeeded.',
-        file=sys.stderr,
     )
 elif jobs_allowed_to_fail:
-    print(
+    print_to_stderr(
         '🛈 Some of the allowed to fail jobs did not succeed.',
-        file=sys.stderr,
     )
 
 
-print('📝 Job statuses:', file=sys.stderr)
+print_to_stderr('📝 Job statuses:')
 for name, job in jobs.items():
-    print(
+    print_to_stderr(
         '📝 {name} → {emoji} {result} [{status}]'.
         format(
             emoji='✓' if job['result'] == 'success' else '❌',
@@ -93,7 +90,6 @@ for name, job in jobs.items():
             status='allowed to fail' if name in jobs_allowed_to_fail
             else 'required to succeed',
         ),
-        file=sys.stderr,
     )
 
 
