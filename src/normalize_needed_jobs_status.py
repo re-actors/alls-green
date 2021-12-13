@@ -8,6 +8,10 @@ import sys
 print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
+def set_gha_output(name, value):
+    print_to_stderr('::set-output name={name}::{value}'.format(**locals()))
+
+
 def parse_inputs(raw_allowed_failures, raw_jobs):
     try:
         allowed_failures_input = json.loads(raw_allowed_failures)
@@ -42,18 +46,12 @@ job_matrix_succeeded = all(
 )
 
 
-print_to_stderr(
-    '::set-output name=failure::{failed}'.
-    format(failed=not job_matrix_succeeded),
+set_gha_output(name='failure', value=not job_matrix_succeeded)
+set_gha_output(
+    name='result',
+    value='success' if job_matrix_succeeded else 'failure',
 )
-print_to_stderr(
-    '::set-output name=result::{result}'.
-    format(result='success' if job_matrix_succeeded else 'failure'),
-)
-print_to_stderr(
-    '::set-output name=success::{succeeded}'.
-    format(succeeded=job_matrix_succeeded),
-)
+set_gha_output(name='success', value=job_matrix_succeeded)
 
 
 allowed_to_fail_jobs_succeeded = all(
