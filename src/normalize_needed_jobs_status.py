@@ -76,38 +76,43 @@ def log_decision_details(
         )
 
 
-inputs = parse_inputs(raw_allowed_failures=sys.argv[1], raw_jobs=sys.argv[2])
+def main(argv):
+    inputs = parse_inputs(raw_allowed_failures=argv[1], raw_jobs=argv[2])
 
 
-jobs = inputs['jobs'] or {}
-jobs_allowed_to_fail = inputs['allowed_failures'] or []
+    jobs = inputs['jobs'] or {}
+    jobs_allowed_to_fail = inputs['allowed_failures'] or []
 
-if not jobs:
-    sys.exit(
-        '❌ Invalid input jobs matrix, '
-        'please provide a non-empty `needs` context',
+    if not jobs:
+        sys.exit(
+            '❌ Invalid input jobs matrix, '
+            'please provide a non-empty `needs` context',
+        )
+
+
+    job_matrix_succeeded = all(
+        job['result'] == 'success' for name, job in jobs.items()
+        if name not in jobs_allowed_to_fail
+    )
+    set_final_result_outputs(job_matrix_succeeded)
+
+
+    allowed_to_fail_jobs_succeeded = all(
+        job['result'] == 'success' for name, job in jobs.items()
+        if name in jobs_allowed_to_fail
     )
 
 
-job_matrix_succeeded = all(
-    job['result'] == 'success' for name, job in jobs.items()
-    if name not in jobs_allowed_to_fail
-)
-set_final_result_outputs(job_matrix_succeeded)
+    log_decision_details(
+            job_matrix_succeeded,
+            jobs_allowed_to_fail,
+            allowed_to_fail_jobs_succeeded,
+            jobs,
+    )
 
 
-allowed_to_fail_jobs_succeeded = all(
-    job['result'] == 'success' for name, job in jobs.items()
-    if name in jobs_allowed_to_fail
-)
+    return int(not job_matrix_succeeded)
 
 
-log_decision_details(
-        job_matrix_succeeded,
-        jobs_allowed_to_fail,
-        allowed_to_fail_jobs_succeeded,
-        jobs,
-)
-
-
-sys.exit(int(not job_matrix_succeeded))
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
