@@ -13,12 +13,12 @@ def set_gha_output(name, value):
 
 
 def set_final_result_outputs(job_matrix_succeeded):
-    set_gha_output(name='failure', value=not job_matrix_succeeded)
+    set_gha_output(name='failure', value=str(not job_matrix_succeeded).lower())
     set_gha_output(
         name='result',
         value='success' if job_matrix_succeeded else 'failure',
     )
-    set_gha_output(name='success', value=job_matrix_succeeded)
+    set_gha_output(name='success', value=str(job_matrix_succeeded).lower())
 
 
 def parse_inputs(raw_allowed_failures, raw_jobs):
