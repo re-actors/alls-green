@@ -12,6 +12,15 @@ def set_gha_output(name, value):
     print_to_stderr('::set-output name={name}::{value}'.format(**locals()))
 
 
+def set_final_result_outputs(job_matrix_succeeded):
+    set_gha_output(name='failure', value=not job_matrix_succeeded)
+    set_gha_output(
+        name='result',
+        value='success' if job_matrix_succeeded else 'failure',
+    )
+    set_gha_output(name='success', value=job_matrix_succeeded)
+
+
 def parse_inputs(raw_allowed_failures, raw_jobs):
     try:
         allowed_failures_input = json.loads(raw_allowed_failures)
@@ -44,14 +53,7 @@ job_matrix_succeeded = all(
     job['result'] == 'success' for name, job in jobs.items()
     if name not in jobs_allowed_to_fail
 )
-
-
-set_gha_output(name='failure', value=not job_matrix_succeeded)
-set_gha_output(
-    name='result',
-    value='success' if job_matrix_succeeded else 'failure',
-)
-set_gha_output(name='success', value=job_matrix_succeeded)
+set_final_result_outputs(job_matrix_succeeded)
 
 
 allowed_to_fail_jobs_succeeded = all(
