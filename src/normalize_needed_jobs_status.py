@@ -8,19 +8,22 @@ import sys
 print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
-allowed_failures_raw_input = sys.argv[1]
-try:
-    allowed_failures_input = json.loads(allowed_failures_raw_input)
-except json.decoder.JSONDecodeError:
-    allowed_failures_input = list(
-        map(str.strip, allowed_failures_raw_input.split(',')),
-    )
+def parse_inputs(raw_allowed_failures, raw_jobs):
+    try:
+        allowed_failures_input = json.loads(raw_allowed_failures)
+    except json.decoder.JSONDecodeError:
+        allowed_failures_input = list(
+            map(str.strip, raw_allowed_failures.split(',')),
+        )
 
 
-inputs = {
-    'allowed_failures': allowed_failures_input,
-    'jobs': json.loads(sys.argv[2]),
-}
+    return {
+        'allowed_failures': allowed_failures_input,
+        'jobs': json.loads(raw_jobs),
+    }
+
+
+inputs = parse_inputs(raw_allowed_failures=sys.argv[1], raw_jobs=sys.argv[2])
 
 
 jobs = inputs['jobs'] or {}
