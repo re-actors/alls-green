@@ -12,12 +12,16 @@ branding:
 
 inputs:
   jobs:
-    description: A list of jobs from the `needs` context
+    description: >-
+      A list of jobs from the `needs` context, serialized as a JSON
+      string via `toJSON(needs)`
     required: true
   allowed-failures:
     default: >-
       []
-    description: Job names that are allowed to fail and not affect the outcome
+    description: >-
+      Job names that are allowed to fail and not affect the outcome,
+      as a comma-separated list or serialized as a JSON string
     required: false
 
 outputs:
