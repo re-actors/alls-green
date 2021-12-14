@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+"""A helper GitHub Action module that computes the outcome."""
 
 import functools
 import json
@@ -9,10 +10,15 @@ print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
 def set_gha_output(name, value):
+    """Set an action output using a runner command.
+
+    https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#setting-an-output-parameter
+    """
     print_to_stderr('::set-output name={name}::{value}'.format(**locals()))
 
 
 def set_final_result_outputs(job_matrix_succeeded):
+    """Set action outputs depending on the computed outcome."""
     set_gha_output(name='failure', value=str(not job_matrix_succeeded).lower())
     set_gha_output(
         name='result',
@@ -22,6 +28,7 @@ def set_final_result_outputs(job_matrix_succeeded):
 
 
 def parse_inputs(raw_allowed_failures, raw_jobs):
+    """Normalize the action inputs by turning them into data."""
     try:
         allowed_failures_input = json.loads(raw_allowed_failures)
     except json.decoder.JSONDecodeError:
@@ -42,6 +49,7 @@ def log_decision_details(
         allowed_to_fail_jobs_succeeded,
         jobs,
 ):
+    """Record the decisions made into console output."""
     if job_matrix_succeeded:
         print_to_stderr(
             '🎉 All of the required dependency jobs succeeded.',
@@ -77,6 +85,7 @@ def log_decision_details(
 
 
 def main(argv):
+    """Decide whether the needed jobs got satisfactory results."""
     inputs = parse_inputs(raw_allowed_failures=argv[1], raw_jobs=argv[2])
 
 
