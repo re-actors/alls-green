@@ -78,6 +78,7 @@ jobs:
       uses: re-actors/alls-green@release/v1
       with:
         allowed-failures: docs, linters
+        allowed-skips: non-voting-flaky-job
         jobs: ${{ toJSON(needs) }}
 ...
 ```
@@ -85,10 +86,13 @@ jobs:
 
 ## Options
 
-There are two options — `allowed-failures` and `jobs`. The former is
-optional but the later is mandatory. `allowed-failures` tells the action
-which jobs should not affect the outcome, by default all the jobs will
-be "voting". `jobs` is an object representing the jobs that should
+There are three options — `allowed-failures`, `allowed-skips` and
+`jobs`. The first two are optional but `jobs` is mandatory.
+`allowed-failures` tells the action which jobs should not affect the
+outcome if they don't succeed, by default all the jobs will
+be "voting". Same goes for `allowed-skips` — it won't allow the listed
+jobs to affect the outcome if they are skipped but are still "voting" in
+case they run. `jobs` is an object representing the jobs that should
 affect the decision of whether the pipeline failed or not, it is
 important to pass a JSON-serialized `needs` context to this argument.
 

@@ -23,6 +23,13 @@ inputs:
       Job names that are allowed to fail and not affect the outcome,
       as a comma-separated list or serialized as a JSON string
     required: false
+  allowed-skips:
+    default: >-
+      []
+    description: >-
+      Job names that are allowed to be skipped and not affect the
+      outcome, as a comma-separated list or serialized as a JSON string
+    required: false
 
 outputs:
   failure:
@@ -46,6 +53,10 @@ runs:
       python -m normalize_needed_jobs_status \
       "$(cat << EOM
         ${{ inputs.allowed-failures }}
+      EOM
+      )" \
+      "$(cat << EOM
+        ${{ inputs.allowed-skips }}
       EOM
       )" \
       "$(cat << EOM
