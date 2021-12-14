@@ -27,14 +27,17 @@ def set_final_result_outputs(job_matrix_succeeded):
     set_gha_output(name='success', value=str(job_matrix_succeeded).lower())
 
 
+def parse_as_list(input_text):
+    """Parse given input as JSON or comma-separated list."""
+    try:
+        return json.loads(input_text)
+    except json.decoder.JSONDecodeError:
+        return [s.strip() for s in input_text.split(',')]
+
+
 def parse_inputs(raw_allowed_failures, raw_jobs):
     """Normalize the action inputs by turning them into data."""
-    try:
-        allowed_failures_input = json.loads(raw_allowed_failures)
-    except json.decoder.JSONDecodeError:
-        allowed_failures_input = list(
-            map(str.strip, raw_allowed_failures.split(',')),
-        )
+    allowed_failures_input = parse_as_list(raw_allowed_failures)
 
 
     return {
