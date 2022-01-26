@@ -134,6 +134,46 @@ the matching jobs will not influence the resulting outcome of the
 whole matrix and this action will "see" that as a success (provided
 that the jobs that are not allowed to fail succeed, of course).
 
+Here's a simplified example of what testing against an unstable
+Python 3.11 release that is allowed to fail might look like:
+```yaml
+---
+
+...  # Some sections have been removed from the example to simplify it
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    matrix:
+       python-version:
+       - >-
+         3.10
+       - ~3.11.0-0
+
+    continue-on-error: >-
+      ${{ contains(matrix.python-version, '~') && true || false }}
+
+    steps:
+    - ...
+
+  check:
+    if: always()
+
+    needs:
+    - tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
+
+...
+```
+
 
 ## Does anybody actually use this?
 
