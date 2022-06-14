@@ -128,7 +128,7 @@ def main(argv):
         job['result'] == 'success' for name, job in jobs.items()
         if name not in (jobs_allowed_to_fail | jobs_allowed_to_be_skipped)
     ) and all(
-        job['result'] in {'skipped', 'success'} for name, job in jobs.items()
+        job['result'] in {'skipped', 'cancelled', 'success'} for name, job in jobs.items()
         if name in jobs_allowed_to_be_skipped
     )
     set_final_result_outputs(job_matrix_succeeded)
