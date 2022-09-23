@@ -3,7 +3,12 @@
 
 import functools
 import json
+import os
+import pathlib
 import sys
+
+
+FILE_APPEND_MODE = 'a'
 
 
 print_to_stderr = functools.partial(print, file=sys.stderr)
@@ -60,6 +65,7 @@ def log_decision_details(
         allowed_to_fail_jobs_succeeded,
         allowed_to_be_skipped_jobs_succeeded,
         jobs,
+        summary_file_streams,
 ):
     """Record the decisions made into console output."""
     markdown_summary_lines = []
@@ -109,7 +115,7 @@ def log_decision_details(
             ),
         }
 
-    write_lines_to_streams(markdown_summary_lines, (sys.stderr, ))
+    write_lines_to_streams(markdown_summary_lines, summary_file_streams)
 
 
 def main(argv):
@@ -119,6 +125,7 @@ def main(argv):
         raw_allowed_skips=argv[2],
         raw_jobs=argv[3],
     )
+    summary_file_path = pathlib.Path(os.environ['GITHUB_STEP_SUMMARY'])
 
 
     jobs = inputs['jobs'] or {}
@@ -154,14 +161,16 @@ def main(argv):
     )
 
 
-    log_decision_details(
+    with summary_file_path.open(mode=FILE_APPEND_MODE) as summary_file:
+        log_decision_details(
             job_matrix_succeeded,
             jobs_allowed_to_fail,
             jobs_allowed_to_be_skipped,
             allowed_to_fail_jobs_succeeded,
             allowed_to_be_skipped_jobs_succeeded,
             jobs,
-    )
+            summary_file_streams=(sys.stderr, summary_file),
+        )
 
 
     return int(not job_matrix_succeeded)
