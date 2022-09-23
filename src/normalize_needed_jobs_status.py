@@ -56,39 +56,39 @@ def log_decision_details(
         jobs,
 ):
     """Record the decisions made into console output."""
-    if job_matrix_succeeded:
-        print_to_stderr(
-            '🎉 All of the required dependency jobs succeeded.',
-        )
-    else:
-        print_to_stderr(
-            '😢 Some of the required to succeed jobs failed.',
-        )
+    markdown_summary_lines = []
 
+    markdown_summary_lines += {
+        '🎉 All of the required dependency jobs succeeded.'
+        if job_matrix_succeeded else
+        '😢 Some of the required to succeed jobs failed.',
+    }
 
     if jobs_allowed_to_fail and allowed_to_fail_jobs_succeeded:
-        print_to_stderr(
+        markdown_summary_lines += {
             '🛈 All of the allowed to fail dependency jobs succeeded.',
-        )
+        }
     elif jobs_allowed_to_fail:
-        print_to_stderr(
+        markdown_summary_lines += {
             '🛈 Some of the allowed to fail jobs did not succeed.',
-        )
+        }
 
 
     if jobs_allowed_to_be_skipped and allowed_to_be_skipped_jobs_succeeded:
-        print_to_stderr(
+        markdown_summary_lines += {
             '🛈 All of the allowed to be skipped dependency jobs succeeded.',
-        )
+        }
     elif jobs_allowed_to_fail:
-        print_to_stderr(
+        markdown_summary_lines += {
             '🛈 Some of the allowed to be skipped jobs did not succeed.',
-        )
+        }
 
 
-    print_to_stderr('📝 Job statuses:')
+    markdown_summary_lines += {
+        '📝 Job statuses:',
+    }
     for name, job in jobs.items():
-        print_to_stderr(
+        markdown_summary_lines += {
             '📝 {name} → {emoji} {result} [{status}]'.
             format(
                 emoji='✓' if job['result'] == 'success'
@@ -101,7 +101,10 @@ def log_decision_details(
                 if name not in jobs_allowed_to_be_skipped
                 else 'required to succeed or be skipped',
             ),
-        )
+        }
+
+    for line in markdown_summary_lines:
+        print_to_stderr(line)
 
 
 def main(argv):
