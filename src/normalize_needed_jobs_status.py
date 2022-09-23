@@ -9,6 +9,12 @@ import sys
 print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
+def write_lines_to_streams(lines, streams):
+    for stream in streams:
+        stream.writelines(lines)
+        stream.flush()
+
+
 def set_gha_output(name, value):
     """Set an action output using a runner command.
 
@@ -103,8 +109,7 @@ def log_decision_details(
             ),
         }
 
-    for line in markdown_summary_lines:
-        print_to_stderr(line)
+    write_lines_to_streams(markdown_summary_lines, (sys.stderr, ))
 
 
 def main(argv):
