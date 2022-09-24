@@ -135,10 +135,15 @@ def main(argv):
     jobs_allowed_to_be_skipped = set(inputs['allowed_skips'] or [])
 
     if not jobs:
-        sys.exit(
-            '# ❌ Invalid input jobs matrix, '
-            'please provide a non-empty `needs` context',
-        )
+        with summary_file_path.open(mode=FILE_APPEND_MODE) as summary_file:
+            write_lines_to_streams(
+                (
+                    '# ❌ Invalid input jobs matrix, '
+                    'please provide a non-empty `needs` context',
+                )
+                (sys.stderr, summary_file),
+            )
+        return 1
 
 
     job_matrix_succeeded = all(
