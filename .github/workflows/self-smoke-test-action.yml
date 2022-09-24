@@ -49,6 +49,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         jobs: ${{ toJSON(needs) }}
     - name: Fail on unexpected outcome (assertion step)
@@ -69,6 +70,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         jobs: ${{ toJSON(needs) }}
     - name: Fail on unexpected outcome (assertion step)
@@ -90,6 +92,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         jobs: ${{ toJSON(needs) }}
     - name: Fail on unexpected outcome (assertion step)
@@ -111,6 +114,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         allowed-failures: >-
           ["failing-job", "skipped-job"]
@@ -134,6 +138,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         allowed-failures: failing-job, skipped-job
         jobs: ${{ toJSON(needs) }}
@@ -156,6 +161,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         allowed-failures: failing-job
         allowed-skips: skipped-job
@@ -179,6 +185,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         allowed-skips: failing-job, skipped-job
         jobs: ${{ toJSON(needs) }}
@@ -202,6 +209,7 @@ jobs:
     - run: echo 'results=${{ toJSON(needs.*.result) }}'
     - uses: ./
       id: check
+      continue-on-error: true
       with:
         allowed-failures: failing-job
         allowed-skips: skipped-job
