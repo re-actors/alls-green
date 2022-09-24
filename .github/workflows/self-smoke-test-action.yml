@@ -212,4 +212,24 @@ jobs:
     - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
       if: always()
 
+  check:
+    needs:
+    - wait-for-success
+    - wait-for-failure
+    - wait-for-both
+    - allow-some-failures
+    - allow-some-failures-str
+    - allow-failures-n-skips
+    - allow-skips
+    - allow-partials
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - uses: ./
+      id: check
+      with:
+        jobs: ${{ toJSON(needs) }}
+
 ...
