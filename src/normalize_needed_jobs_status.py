@@ -72,9 +72,9 @@ def log_decision_details(
     markdown_summary_lines = []
 
     markdown_summary_lines += {
-        '# 🎉 All of the required dependency jobs succeeded.'
+        '# ✓ All of the required dependency jobs succeeded 🎉🎉🎉'
         if job_matrix_succeeded else
-        '# 😢 Some of the required to succeed jobs failed.'
+        '# ❌ Some of the required to succeed jobs failed 😢😢😢'
     }
     markdown_summary_lines += {''}
 
