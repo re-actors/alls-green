@@ -1,0 +1,215 @@
+---
+
+name: Action self-check / smoke-test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  failing-job:
+    runs-on: ubuntu-latest
+    steps:
+    - run: exit 1
+
+  succeeding-job:
+    runs-on: ubuntu-latest
+    steps:
+    - run: exit 0
+
+  skipped-job:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+    - run: exit 0
+
+  partially-failing-partially-skipped-matrix:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.rc == '1' }}
+    strategy:
+      matrix:
+        rc:
+        - 0
+        - 1
+        - 2
+    steps:
+    - if: matrix.rc != '2'
+      run: exit ${{ matrix.rc }}
+
+  wait-for-success:
+    needs:
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'failure'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  wait-for-failure:
+    needs:
+    - failing-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'failure'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  wait-for-both:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'failure'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  allow-some-failures:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        allowed-failures: >-
+          ["failing-job", "skipped-job"]
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'success'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  allow-some-failures-str:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        allowed-failures: failing-job, skipped-job
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'success'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  allow-failures-n-skips:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        allowed-failures: failing-job
+        allowed-skips: skipped-job
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'success'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  allow-skips:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        allowed-skips: failing-job, skipped-job
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'failure'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  allow-partials:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    - partially-failing-partially-skipped-matrix
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      with:
+        allowed-failures: failing-job
+        allowed-skips: skipped-job
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'success'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+...
