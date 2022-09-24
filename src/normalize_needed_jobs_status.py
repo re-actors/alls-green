@@ -15,8 +15,9 @@ print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
 def write_lines_to_streams(lines, streams):
+    eoled_lines = [line + os.linesep for line in lines]
     for stream in streams:
-        stream.writelines(lines)
+        stream.writelines(eoled_lines)
         stream.flush()
 
 
