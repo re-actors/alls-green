@@ -140,7 +140,7 @@ def main(argv):
                 (
                     '# ❌ Invalid input jobs matrix, '
                     'please provide a non-empty `needs` context',
-                )
+                ),
                 (sys.stderr, summary_file),
             )
         return 1
