@@ -71,10 +71,11 @@ def log_decision_details(
     markdown_summary_lines = []
 
     markdown_summary_lines += {
-        '🎉 All of the required dependency jobs succeeded.'
+        '# 🎉 All of the required dependency jobs succeeded.'
         if job_matrix_succeeded else
-        '😢 Some of the required to succeed jobs failed.',
+        '# 😢 Some of the required to succeed jobs failed.'
     }
+    markdown_summary_lines += {''}
 
     if jobs_allowed_to_fail and allowed_to_fail_jobs_succeeded:
         markdown_summary_lines += {
@@ -134,7 +135,7 @@ def main(argv):
 
     if not jobs:
         sys.exit(
-            '❌ Invalid input jobs matrix, '
+            '# ❌ Invalid input jobs matrix, '
             'please provide a non-empty `needs` context',
         )
 
