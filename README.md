@@ -120,7 +120,7 @@ that the jobs that are not allowed to fail succeed, of course).
 ## Does anybody actually use this?
 
 We've notice it being integrated into some projects of aiohttp, Ansible,
-attrs, CherryPy, PyCA, PyPI, pytest and setuptools ecosystems. And
+attrs, CherryPy, PyCA, PyPA, pytest and setuptools ecosystems. And
 here's more: https://github.com/re-actors/alls-green/network/dependents.
 
 
