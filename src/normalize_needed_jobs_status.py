@@ -47,10 +47,18 @@ def parse_as_list(input_text):
         return [s.strip() for s in input_text.split(',')]
 
 
+def drop_empty_from_list(a_list):
+    return [list_element for list_element in a_list if list_element]
+
+
 def parse_inputs(raw_allowed_failures, raw_allowed_skips, raw_jobs):
     """Normalize the action inputs by turning them into data."""
-    allowed_failures_input = parse_as_list(raw_allowed_failures)
-    allowed_skips_input = parse_as_list(raw_allowed_skips)
+    allowed_failures_input = drop_empty_from_list(
+        parse_as_list(raw_allowed_failures),
+    )
+    allowed_skips_input = drop_empty_from_list(
+        parse_as_list(raw_allowed_skips),
+    )
 
     return {
         'allowed_failures': allowed_failures_input,
