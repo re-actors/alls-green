@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 """A helper GitHub Action module that computes the outcome."""
 
-import functools
 import json
 import os
 import pathlib
@@ -9,9 +8,6 @@ import sys
 
 
 FILE_APPEND_MODE = 'a'
-
-
-print_to_stderr = functools.partial(print, file=sys.stderr)
 
 
 def write_lines_to_streams(lines, streams):
@@ -22,11 +18,15 @@ def write_lines_to_streams(lines, streams):
 
 
 def set_gha_output(name, value):
-    """Set an action output using a runner command.
+    """Set an action output using an environment file.
 
-    https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#setting-an-output-parameter
+    Refs:
+    * https://hynek.me/til/set-output-deprecation-github-actions/
+    * https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
     """
-    print_to_stderr('::set-output name={name}::{value}'.format(**locals()))
+    outputs_file_path = pathlib.Path(os.environ['GITHUB_OUTPUT'])
+    with outputs_file_path.open(mode=FILE_APPEND_MODE) as outputs_file:
+        write_lines_to_streams((f'{name}::{value}',), (outputs_file,))
 
 
 def set_final_result_outputs(job_matrix_succeeded):
