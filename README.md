@@ -119,9 +119,12 @@ that the jobs that are not allowed to fail succeed, of course).
 
 ## Does anybody actually use this?
 
-We've notice it being integrated into some projects of aiohttp, Ansible,
-attrs, CherryPy, PyCA, PyPA, pytest and setuptools ecosystems. And
-here's more: https://github.com/re-actors/alls-green/network/dependents.
+We've seen it being integrated into some projects of [@aio-libs]
+(notably, [aiohttp]), [Ansible] [Collections][Ansible Collections]
+[Community][Ansible Community], [attrs], [pip-tools], [setuptools],
+[structlog], [@CherryPy], [conda], [coveragepy], [Open edX],
+[Towncrier], [@PyCA], [@PyPA] and [@pytest] ecosystems. And here's more:
+https://github.com/re-actors/alls-green/network/dependents.
 
 
 ## Whose idea is this?
@@ -149,12 +152,28 @@ The contents of this project is released under the
 
 
 [aiohttp]: https://github.com/aio-libs/aiohttp
+[Ansible]: https://github.com/ansible
+[Ansible Collections]: https://github.com/ansible-collections
+[Ansible Community]: https://github.com/ansible-community
+[attrs]: https://github.com/python-attrs/attrs
 [BSD 3-clause license]: LICENSE.md
+[conda]: https://github.com/conda/conda
+[coveragepy]: https://github.com/nedbat/coveragepy
 [forum:check]:
 https://github.com/orgs/community/discussions/26733#discussioncomment-3253151
 [gating]: https://gating.dev
+[Open edX]: https://github.com/openedx/edx-platform
+[pip-tools]: https://github.com/jazzband/pip-tools
 [PyCA/cryptography]: https://github.com/PyCA/cryptography
+[setuptools]: https://github.com/PyPA/setuptools
+[structlog]: https://github.com/hynek/structlog
+[Towncrier]: https://github.com/twisted/towncrier
 [Zuul]: https://zuul-ci.org
+[@aio-libs]: https://github.com/aio-libs
+[@CherryPy]: https://github.com/cherrypy
 [@graingert]: https://github.com/sponsors/graingert
+[@PyCA]: https://github.com/PyCA
+[@PyPA]: https://github.com/PyPA
+[@pytest]: https://github.com/pytest-dev
 [@reaperhulk]: https://github.com/sponsors/reaperhulk
 [@webknjaz]: https://github.com/sponsors/webknjaz
