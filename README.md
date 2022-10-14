@@ -151,7 +151,7 @@ The contents of this project is released under the
 [aiohttp]: https://github.com/aio-libs/aiohttp
 [BSD 3-clause license]: LICENSE.md
 [forum:check]:
-https://github.community/t/is-it-possible-to-require-all-github-actions-tasks-to-pass-without-enumerating-them/117957/4?u=webknjaz
+https://github.com/orgs/community/discussions/26733#discussioncomment-3253151
 [gating]: https://gating.dev
 [PyCA/cryptography]: https://github.com/PyCA/cryptography
 [Zuul]: https://zuul-ci.org
