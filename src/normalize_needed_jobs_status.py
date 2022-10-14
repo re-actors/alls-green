@@ -26,7 +26,7 @@ def set_gha_output(name, value):
     """
     outputs_file_path = pathlib.Path(os.environ['GITHUB_OUTPUT'])
     with outputs_file_path.open(mode=FILE_APPEND_MODE) as outputs_file:
-        write_lines_to_streams((f'{name}::{value}',), (outputs_file,))
+        write_lines_to_streams((f'{name}={value}',), (outputs_file,))
 
 
 def set_final_result_outputs(job_matrix_succeeded):
