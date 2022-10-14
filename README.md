@@ -179,9 +179,10 @@ jobs:
 
 We've seen it being integrated into some projects of [@aio-libs]
 (notably, [aiohttp]), [Ansible] [Collections][Ansible Collections]
-[Community][Ansible Community], [attrs], [pip-tools], [setuptools],
-[structlog], [@CherryPy], [conda], [coveragepy], [Open edX],
-[Towncrier], [@PyCA], [@PyPA] and [@pytest] ecosystems. And here's more:
+[Community][Ansible Community], [attrs], [@CherryPy], [conda],
+[coveragepy], [Open edX], [pip-tools], [setuptools], [structlog],
+[spaceship-prompt], [Towncrier], [@PyCA], [@PyPA] and [@pytest]
+ecosystems. And here's more:
 https://github.com/re-actors/alls-green/network/dependents.
 
 
@@ -224,6 +225,7 @@ https://github.com/orgs/community/discussions/26733#discussioncomment-3253151
 [pip-tools]: https://github.com/jazzband/pip-tools
 [PyCA/cryptography]: https://github.com/PyCA/cryptography
 [setuptools]: https://github.com/PyPA/setuptools
+[spaceship-prompt]: https://github.com/spaceship-prompt/spaceship-prompt
 [structlog]: https://github.com/hynek/structlog
 [Towncrier]: https://github.com/twisted/towncrier
 [Zuul]: https://zuul-ci.org
