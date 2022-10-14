@@ -103,6 +103,24 @@ dependencies fail. In some contexts, `skipped` is interpreted as
 in security breach "dangerous") side-effects.
 
 
+## Outputs
+
+
+### ``failure``
+
+Whether this check decided that the job matrix failed.
+
+
+### ``result``
+
+Failure or success result of the job matrix.
+
+
+### ``success``
+
+Whether this check decided that the job matrix succeeded.
+
+
 ## Gotchas
 
 An attentive reader may have noticed that there is no clear way to
