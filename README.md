@@ -108,18 +108,16 @@ in security breach "dangerous") side-effects.
 
 ### ``failure``
 
-Whether this check decided that the job matrix failed.
-
+This check determines whether the job matrix has failed and returns the status as `success`.
 
 ### ``result``
 
-Failure or success result of the job matrix.
+returns `failure` or `success` as result of the job matrix.
 
 
 ### ``success``
 
-Whether this check decided that the job matrix succeeded.
-
+This check determines whether the job matrix has succeeded and returns the status as `success`.
 
 ## Gotchas
 
