@@ -183,14 +183,17 @@ def main(argv: list[str]) -> int:
             )
         return 1
 
+    allowed_outcome_map = {}
+    for job_name in jobs:
+        allowed_outcome_map[job_name] = {'success'}
+        if job_name in jobs_allowed_to_be_skipped:
+            allowed_outcome_map[job_name].add('skipped')
+        if job_name in jobs_allowed_to_fail:
+            allowed_outcome_map[job_name].add('failure')
+
     job_matrix_succeeded = all(
-        job['result'] == 'success'
+        job['result'] in allowed_outcome_map[name]
         for name, job in jobs.items()
-        if name not in (jobs_allowed_to_fail | jobs_allowed_to_be_skipped)
-    ) and all(
-        job['result'] in {'skipped', 'success'}
-        for name, job in jobs.items()
-        if name in jobs_allowed_to_be_skipped
     )
     set_final_result_outputs(job_matrix_succeeded)
 
