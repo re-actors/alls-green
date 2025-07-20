@@ -166,6 +166,9 @@ def main(argv: list[str]) -> int:
     jobs = inputs['jobs'] or {}
     jobs_allowed_to_fail = set(inputs['allowed_failures'] or [])
     jobs_allowed_to_be_skipped = set(inputs['allowed_skips'] or [])
+    print(f'{jobs=}')
+    print(f'{jobs_allowed_to_fail=}')
+    print(f'{jobs_allowed_to_be_skipped=}')
 
     if not jobs:
         with summary_file_path.open(  # type: ignore[misc]
@@ -191,10 +194,20 @@ def main(argv: list[str]) -> int:
         if job_name in jobs_allowed_to_fail:
             allowed_outcome_map[job_name].add('failure')
 
+    print(f'{allowed_outcome_map=}')
+    print(f"""{[
+        job['result'] == 'success' for name, job in jobs.items()
+        if name not in (jobs_allowed_to_fail | jobs_allowed_to_be_skipped)
+    ]=}""")
+    print(f"""{[
+        (name, job['result'] in {'skipped', 'success'}) for name, job in jobs.items()
+        if name in jobs_allowed_to_be_skipped
+    ]=}""")
     job_matrix_succeeded = all(
         job['result'] in allowed_outcome_map[name]
         for name, job in jobs.items()
     )
+    print(f'{job_matrix_succeeded=}')
     set_final_result_outputs(job_matrix_succeeded)
 
     allowed_to_fail_jobs_succeeded = all(
@@ -202,12 +215,14 @@ def main(argv: list[str]) -> int:
         for name, job in jobs.items()
         if name in jobs_allowed_to_fail
     )
+    print(f'{allowed_to_fail_jobs_succeeded=}')
 
     allowed_to_be_skipped_jobs_succeeded = all(
         job['result'] == 'success'
         for name, job in jobs.items()
         if name in jobs_allowed_to_be_skipped
     )
+    print(f'{allowed_to_be_skipped_jobs_succeeded=}')
 
     with summary_file_path.open(  # type: ignore[misc]
         mode=FILE_APPEND_MODE,
