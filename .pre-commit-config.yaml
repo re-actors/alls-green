@@ -97,4 +97,9 @@ repos:
     args:
     - --strict
 
+- repo: https://github.com/openstack/bashate.git
+  rev: 2.1.1
+  hooks:
+  - id: bashate
+
 ...
