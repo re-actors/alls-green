@@ -23,4 +23,9 @@ repos:
     alias: ruff-format-second-pass
     name: ruff-format (second pass)
 
+- repo: https://github.com/Lucas-C/pre-commit-hooks.git
+  rev: v1.5.5
+  hooks:
+  - id: remove-tabs
+
 ...
