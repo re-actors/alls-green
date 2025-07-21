@@ -68,21 +68,21 @@ def parse_inputs(raw_allowed_failures, raw_allowed_skips, raw_jobs):
 
 
 def log_decision_details(
-        job_matrix_succeeded,
-        jobs_allowed_to_fail,
-        jobs_allowed_to_be_skipped,
-        allowed_to_fail_jobs_succeeded,
-        allowed_to_be_skipped_jobs_succeeded,
-        jobs,
-        summary_file_streams,
+    job_matrix_succeeded,
+    jobs_allowed_to_fail,
+    jobs_allowed_to_be_skipped,
+    allowed_to_fail_jobs_succeeded,
+    allowed_to_be_skipped_jobs_succeeded,
+    jobs,
+    summary_file_streams,
 ):
     """Record the decisions made into console output."""
     markdown_summary_lines = []
 
     markdown_summary_lines += {
         '# ✓ All of the required dependency jobs succeeded 🎉🎉🎉'
-        if job_matrix_succeeded else
-        '# ❌ Some of the required to succeed jobs failed 😢😢😢'
+        if job_matrix_succeeded
+        else '# ❌ Some of the required to succeed jobs failed 😢😢😢',
     }
     markdown_summary_lines += {''}
 
@@ -95,7 +95,6 @@ def log_decision_details(
             '🛈 Some of the allowed to fail jobs did not succeed.',
         }
 
-
     if jobs_allowed_to_be_skipped and allowed_to_be_skipped_jobs_succeeded:
         markdown_summary_lines += {
             '🛈 All of the allowed to be skipped dependency jobs succeeded.',
@@ -105,20 +104,21 @@ def log_decision_details(
             '🛈 Some of the allowed to be skipped jobs did not succeed.',
         }
 
-
     markdown_summary_lines += {
         '📝 Job statuses:',
     }
     for name, job in jobs.items():
         markdown_summary_lines += {
-            '📝 {name} → {emoji} {result} [{status}]'.
-            format(
-                emoji='✓' if job['result'] == 'success'
-                else '❌' if job['result'] == 'failure'
+            '📝 {name} → {emoji} {result} [{status}]'.format(
+                emoji='✓'
+                if job['result'] == 'success'
+                else '❌'
+                if job['result'] == 'failure'
                 else '⬜',
                 name=name,
                 result=job['result'],
-                status='allowed to fail' if name in jobs_allowed_to_fail
+                status='allowed to fail'
+                if name in jobs_allowed_to_fail
                 else 'required to succeed'
                 if name not in jobs_allowed_to_be_skipped
                 else 'required to succeed or be skipped',
@@ -137,7 +137,6 @@ def main(argv):
     )
     summary_file_path = pathlib.Path(os.environ['GITHUB_STEP_SUMMARY'])
 
-
     jobs = inputs['jobs'] or {}
     jobs_allowed_to_fail = set(inputs['allowed_failures'] or [])
     jobs_allowed_to_be_skipped = set(inputs['allowed_skips'] or [])
@@ -153,28 +152,28 @@ def main(argv):
             )
         return 1
 
-
     job_matrix_succeeded = all(
-        job['result'] == 'success' for name, job in jobs.items()
+        job['result'] == 'success'
+        for name, job in jobs.items()
         if name not in (jobs_allowed_to_fail | jobs_allowed_to_be_skipped)
     ) and all(
-        job['result'] in {'skipped', 'success'} for name, job in jobs.items()
+        job['result'] in {'skipped', 'success'}
+        for name, job in jobs.items()
         if name in jobs_allowed_to_be_skipped
     )
     set_final_result_outputs(job_matrix_succeeded)
 
-
     allowed_to_fail_jobs_succeeded = all(
-        job['result'] == 'success' for name, job in jobs.items()
+        job['result'] == 'success'
+        for name, job in jobs.items()
         if name in jobs_allowed_to_fail
     )
 
-
     allowed_to_be_skipped_jobs_succeeded = all(
-        job['result'] == 'success' for name, job in jobs.items()
+        job['result'] == 'success'
+        for name, job in jobs.items()
         if name in jobs_allowed_to_be_skipped
     )
-
 
     with summary_file_path.open(mode=FILE_APPEND_MODE) as summary_file:
         log_decision_details(
@@ -186,7 +185,6 @@ def main(argv):
             jobs,
             summary_file_streams=(sys.stderr, summary_file),
         )
-
 
     return int(not job_matrix_succeeded)
 
