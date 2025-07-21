@@ -54,6 +54,13 @@ repos:
   - id: python-no-log-warn
   - id: rst-backticks
 
+- repo: https://github.com/codespell-project/codespell.git
+  rev: v2.4.1
+  hooks:
+  - id: codespell
+    exclude: >-
+      ^\.github/\.json-schemas/.*\.json$
+
 - repo: https://github.com/adrienverge/yamllint.git
   rev: v1.37.1
   hooks:
