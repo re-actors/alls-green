@@ -1,0 +1,4 @@
+line-length = 79  # Accessibility-friendly
+
+[format]
+quote-style = "single"
