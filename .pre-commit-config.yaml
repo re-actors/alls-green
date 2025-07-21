@@ -102,4 +102,9 @@ repos:
   hooks:
   - id: bashate
 
+- repo: https://github.com/shellcheck-py/shellcheck-py.git
+  rev: v0.10.0.1
+  hooks:
+  - id: shellcheck
+
 ...
