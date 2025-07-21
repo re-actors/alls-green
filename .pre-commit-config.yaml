@@ -54,6 +54,32 @@ repos:
   - id: python-no-log-warn
   - id: rst-backticks
 
+- repo: https://github.com/pre-commit/pre-commit-hooks.git
+  rev: v5.0.0
+  hooks:
+  # Side-effects:
+  - id: trailing-whitespace
+  - id: check-merge-conflict
+  - id: double-quote-string-fixer
+  - id: end-of-file-fixer
+  # Non-modifying checks:
+  - id: name-tests-test
+    files: >-
+      ^tests/[^_].*\.py$
+  - id: check-added-large-files
+  - id: check-byte-order-marker
+  - id: check-case-conflict
+  # disabled due to pre-commit/pre-commit-hooks#159
+  # - id: check-docstring-first
+  - id: check-json
+  - id: check-symlinks
+  - id: check-yaml
+  - id: detect-private-key
+
+  # Heavy checks:
+  - id: check-ast
+  - id: debug-statements
+
 - repo: https://github.com/codespell-project/codespell.git
   rev: v2.4.1
   hooks:
