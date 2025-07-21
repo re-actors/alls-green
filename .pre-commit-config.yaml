@@ -45,4 +45,13 @@ repos:
     - yaml
   - id: check-readthedocs
 
+- repo: https://github.com/pre-commit/pygrep-hooks.git
+  rev: v1.10.0
+  hooks:
+  - id: python-check-blanket-noqa
+  - id: python-check-mock-methods
+  - id: python-no-eval
+  - id: python-no-log-warn
+  - id: rst-backticks
+
 ...
