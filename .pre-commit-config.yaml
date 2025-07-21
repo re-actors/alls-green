@@ -54,4 +54,14 @@ repos:
   - id: python-no-log-warn
   - id: rst-backticks
 
+- repo: https://github.com/adrienverge/yamllint.git
+  rev: v1.37.1
+  hooks:
+  - id: yamllint
+    types:
+    - file
+    - yaml
+    args:
+    - --strict
+
 ...
