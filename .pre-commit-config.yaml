@@ -107,6 +107,11 @@ repos:
   hooks:
   - id: shellcheck
 
+- repo: https://github.com/Lucas-C/pre-commit-hooks-lxml.git
+  rev: v1.1.0
+  hooks:
+  - id: forbid-html-img-without-alt-text
+
 - repo: https://github.com/pre-commit/mirrors-mypy.git
   rev: v1.17.0
   hooks:
