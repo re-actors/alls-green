@@ -7,6 +7,14 @@ repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit.git
   rev: v0.12.4
   hooks:
+  - id: ruff
+    args:
+    # Ref: https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    - --fix  # NOTE: When `--fix` is used, linting should be before ruff-format
+
+- repo: https://github.com/astral-sh/ruff-pre-commit.git
+  rev: v0.12.4
+  hooks:
   - id: ruff-format
     alias: ruff-format-first-pass
     name: ruff-format (first pass)

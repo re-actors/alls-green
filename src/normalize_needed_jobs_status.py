@@ -12,18 +12,18 @@ _T = _t.TypeVar('_T')
 FILE_APPEND_MODE = 'a'
 
 
-class ActionJobInputType(_t.TypedDict):
+class ActionJobInputType(_t.TypedDict):  # noqa: D101
     outputs: dict[str, str]
     result: _t.Literal['success', 'failure', 'cancelled', 'skipped']
 
 
-class ActionInputsType(_t.TypedDict):
+class ActionInputsType(_t.TypedDict):  # noqa: D101
     allowed_failures: list[str]
     allowed_skips: list[str]
     jobs: dict[str, ActionJobInputType]
 
 
-def write_lines_to_streams(
+def write_lines_to_streams(  # noqa: D103
     lines: _t.Iterable[str],
     streams: _t.Iterable[_t.TextIO],
 ) -> None:
@@ -69,7 +69,7 @@ def parse_as_list(input_text: str) -> list[str]:
         return [s.strip() for s in input_text.split(',')]
 
 
-def drop_empty_from_list(a_list: _t.Iterable[_T]) -> list[_T]:
+def drop_empty_from_list(a_list: _t.Iterable[_T]) -> list[_T]:  # noqa: D103
     return [list_element for list_element in a_list if list_element]
 
 

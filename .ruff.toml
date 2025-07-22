@@ -1,4 +1,84 @@
 line-length = 79  # Accessibility-friendly
 
+namespace-packages = [
+  "tests/",
+]
+
 [format]
 quote-style = "single"
+
+[lint]
+external = [
+  "WPS",  # Do not remove noqa for wemake-python-style (WPS) checks
+]
+ignore = [
+  "CPY001",  # Skip copyright notice requirement at top of files
+
+  # # Refs:
+  # # * https://github.com/astral-sh/ruff/issues/6606
+  # # * https://github.com/astral-sh/ruff/pull/13286
+  "DOC201",  # Ruff doesn't understand sphinx-native param lists
+
+  "FBT001",  # boolean-type-hint-positional-argument  # FIXME / noqa
+
+  "PLR0913",  # too-many-arguments  # FIXME / noqa
+  "PLR0917",  # too-many-positional-arguments  # FIXME / noqa
+]
+preview = true  # Live dangerously
+select = [
+  "ALL",
+]
+task-tags = [
+  "FIXME",
+  "NOTE",
+  "Ref",
+  "Refs",
+  "TODO",
+]
+
+[lint.flake8-pytest-style]
+parametrize-values-type = "tuple"
+
+[lint.flake8-quotes]
+inline-quotes = "single"
+
+[lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+lines-after-imports = 2
+section-order = [
+  "future",
+  "standard-library",
+  "testing",
+  "frameworks",
+  "platforms",
+  "third-party",
+  "first-party",
+  "local-folder",
+]
+
+[lint.isort.sections]
+frameworks = [
+]
+platforms = [
+]
+testing = [
+  "hypothesis",
+  "pytest",
+  "pytest_mock",
+  "pytest_subtests",
+]
+
+
+[lint.per-file-ignores]
+# Exceptions for test files
+"tests/**.py" = [
+  "PLC2701",  # Allow importing internal files needed for testing
+  "S101",  # Allow use of `assert` in test files
+  "S404",  # Allow importing 'subprocess' module to testing call external tools needed by these hooks
+  "S603",  # subprocess-without-shell-equals-true
+  "SLF001",  # Private member accessed
+]
+
+[lint.pydocstyle]
+convention = "pep257"
