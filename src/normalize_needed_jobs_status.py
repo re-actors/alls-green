@@ -5,19 +5,35 @@ import json
 import os
 import pathlib
 import sys
+import typing as _t
 
 
+_T = _t.TypeVar('_T')
 FILE_APPEND_MODE = 'a'
 
 
-def write_lines_to_streams(lines, streams):
+class ActionJobInputType(_t.TypedDict):
+    outputs: dict[str, str]
+    result: _t.Literal['success', 'failure', 'cancelled', 'skipped']
+
+
+class ActionInputsType(_t.TypedDict):
+    allowed_failures: list[str]
+    allowed_skips: list[str]
+    jobs: dict[str, ActionJobInputType]
+
+
+def write_lines_to_streams(
+    lines: _t.Iterable[str],
+    streams: _t.Iterable[_t.TextIO],
+) -> None:
     eoled_lines = [line + os.linesep for line in lines]
     for stream in streams:
         stream.writelines(eoled_lines)
         stream.flush()
 
 
-def set_gha_output(name, value):
+def set_gha_output(name: str, value: str) -> None:
     """Set an action output using an environment file.
 
     Refs:
@@ -25,11 +41,17 @@ def set_gha_output(name, value):
     * https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
     """
     outputs_file_path = pathlib.Path(os.environ['GITHUB_OUTPUT'])
-    with outputs_file_path.open(mode=FILE_APPEND_MODE) as outputs_file:
-        write_lines_to_streams((f'{name}={value}',), (outputs_file,))
+    # NOTE: typeshed does note cover `OpenTextMode` for pathlib.Path.open()
+    with outputs_file_path.open(  # type: ignore[misc]
+        mode=FILE_APPEND_MODE,
+    ) as outputs_file:
+        write_lines_to_streams(
+            (f'{name}={value}',),
+            (_t.cast('_t.TextIO', outputs_file),),
+        )
 
 
-def set_final_result_outputs(job_matrix_succeeded):
+def set_final_result_outputs(job_matrix_succeeded: bool) -> None:
     """Set action outputs depending on the computed outcome."""
     set_gha_output(name='failure', value=str(not job_matrix_succeeded).lower())
     set_gha_output(
@@ -39,19 +61,23 @@ def set_final_result_outputs(job_matrix_succeeded):
     set_gha_output(name='success', value=str(job_matrix_succeeded).lower())
 
 
-def parse_as_list(input_text):
+def parse_as_list(input_text: str) -> list[str]:
     """Parse given input as JSON or comma-separated list."""
     try:
-        return json.loads(input_text)
+        return _t.cast('list[str]', json.loads(input_text))
     except json.decoder.JSONDecodeError:
         return [s.strip() for s in input_text.split(',')]
 
 
-def drop_empty_from_list(a_list):
+def drop_empty_from_list(a_list: _t.Iterable[_T]) -> list[_T]:
     return [list_element for list_element in a_list if list_element]
 
 
-def parse_inputs(raw_allowed_failures, raw_allowed_skips, raw_jobs):
+def parse_inputs(
+    raw_allowed_failures: str,
+    raw_allowed_skips: str,
+    raw_jobs: str,
+) -> ActionInputsType:
     """Normalize the action inputs by turning them into data."""
     allowed_failures_input = drop_empty_from_list(
         parse_as_list(raw_allowed_failures),
@@ -63,21 +89,21 @@ def parse_inputs(raw_allowed_failures, raw_allowed_skips, raw_jobs):
     return {
         'allowed_failures': allowed_failures_input,
         'allowed_skips': allowed_skips_input,
-        'jobs': json.loads(raw_jobs),
+        'jobs': _t.cast('dict[str, ActionJobInputType]', json.loads(raw_jobs)),
     }
 
 
 def log_decision_details(
-    job_matrix_succeeded,
-    jobs_allowed_to_fail,
-    jobs_allowed_to_be_skipped,
-    allowed_to_fail_jobs_succeeded,
-    allowed_to_be_skipped_jobs_succeeded,
-    jobs,
-    summary_file_streams,
-):
+    job_matrix_succeeded: bool,
+    jobs_allowed_to_fail: _t.Iterable[str],
+    jobs_allowed_to_be_skipped: _t.Iterable[str],
+    allowed_to_fail_jobs_succeeded: bool,
+    allowed_to_be_skipped_jobs_succeeded: bool,
+    jobs: dict[str, ActionJobInputType],
+    summary_file_streams: _t.Iterable[_t.TextIO],
+) -> None:
     """Record the decisions made into console output."""
-    markdown_summary_lines = []
+    markdown_summary_lines: list[str] = []
 
     markdown_summary_lines += {
         '# ✓ All of the required dependency jobs succeeded 🎉🎉🎉'
@@ -128,7 +154,7 @@ def log_decision_details(
     write_lines_to_streams(markdown_summary_lines, summary_file_streams)
 
 
-def main(argv):
+def main(argv: list[str]) -> int:
     """Decide whether the needed jobs got satisfactory results."""
     inputs = parse_inputs(
         raw_allowed_failures=argv[1],
@@ -142,13 +168,18 @@ def main(argv):
     jobs_allowed_to_be_skipped = set(inputs['allowed_skips'] or [])
 
     if not jobs:
-        with summary_file_path.open(mode=FILE_APPEND_MODE) as summary_file:
+        with summary_file_path.open(  # type: ignore[misc]
+            mode=FILE_APPEND_MODE,
+        ) as summary_file:
             write_lines_to_streams(
                 (
                     '# ❌ Invalid input jobs matrix, '
                     'please provide a non-empty `needs` context',
                 ),
-                (sys.stderr, summary_file),
+                (
+                    _t.cast('_t.TextIO', sys.stderr),
+                    _t.cast('_t.TextIO', summary_file),
+                ),
             )
         return 1
 
@@ -175,7 +206,9 @@ def main(argv):
         if name in jobs_allowed_to_be_skipped
     )
 
-    with summary_file_path.open(mode=FILE_APPEND_MODE) as summary_file:
+    with summary_file_path.open(  # type: ignore[misc]
+        mode=FILE_APPEND_MODE,
+    ) as summary_file:
         log_decision_details(
             job_matrix_succeeded,
             jobs_allowed_to_fail,
@@ -183,7 +216,10 @@ def main(argv):
             allowed_to_fail_jobs_succeeded,
             allowed_to_be_skipped_jobs_succeeded,
             jobs,
-            summary_file_streams=(sys.stderr, summary_file),
+            summary_file_streams=(
+                sys.stderr,
+                _t.cast('_t.TextIO', summary_file),
+            ),
         )
 
     return int(not job_matrix_succeeded)
