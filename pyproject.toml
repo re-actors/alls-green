@@ -1,0 +1,11 @@
+[dependency-groups]
+testing = [
+  'covdefaults',  # coveragepy settings as a plugin
+  'coverage',  # accessed directly from tox
+  'coverage-enable-subprocess',  # coveragepy plugin
+  'pytest',  # test runner
+  'pytest-cov',  # coveragepy integration
+  'pytest-mock',  # `mocker` fixture
+  'pytest-subtests',  # allows marking bits of test functions as subtests
+  'pytest-xdist',  # parallelism
+]
