@@ -12,8 +12,6 @@ _site-packages-to-src-mapping =
   *\Lib\site-packages
 
 [report]
-# `fail_under` is set here temporarily until it can be dropped:
-fail_under = 28
 skip_covered = true
 skip_empty = true
 show_missing = true

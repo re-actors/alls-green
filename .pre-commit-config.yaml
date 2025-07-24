@@ -128,6 +128,7 @@ repos:
     name: MyPy, for Python 3.13
     additional_dependencies:
     - lxml  # dep of `--txt-report`, `--cobertura-xml-report` & `--html-report`
+    - pytest  # tests are also type-checked
     args:
     - --python-version=3.13
     - --any-exprs-report=.tox/.tmp/.test-results/mypy--py-3.13
@@ -143,6 +144,7 @@ repos:
     name: MyPy, for Python 3.11
     additional_dependencies:
     - lxml  # dep of `--txt-report`, `--cobertura-xml-report` & `--html-report`
+    - pytest  # tests are also type-checked
     args:
     - --python-version=3.11
     - --any-exprs-report=.tox/.tmp/.test-results/mypy--py-3.11
@@ -158,6 +160,7 @@ repos:
     name: MyPy, for Python 3.9
     additional_dependencies:
     - lxml  # dep of `--txt-report`, `--cobertura-xml-report` & `--html-report`
+    - pytest  # tests are also type-checked
     args:
     - --python-version=3.9
     - --any-exprs-report=.tox/.tmp/.test-results/mypy--py-3.9
