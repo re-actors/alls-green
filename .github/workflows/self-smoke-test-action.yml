@@ -232,6 +232,56 @@ jobs:
     - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
       if: always()
 
+  action-summary-output-none:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      continue-on-error: true
+      with:
+        action-summary-output: none
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'failure'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
+  action-summary-output-quiet-on-success:
+    needs:
+    - failing-job
+    - succeeding-job
+    - skipped-job
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+    - name: Checkout the src from Git
+      uses: actions/checkout@v3
+    - run: echo 'results=${{ toJSON(needs.*.result) }}'
+    - uses: ./
+      id: check
+      continue-on-error: true
+      with:
+        action-summary-output: quiet-on-success
+        allowed-failures: failing-job
+        allowed-skips: skipped-job
+        jobs: ${{ toJSON(needs) }}
+    - name: Fail on unexpected outcome (assertion step)
+      run: exit 1
+      if: steps.check.outcome != 'success'
+    - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
+      if: always()
+
   tests:
     name: 🧪 Tests${{ '' }}  # nest jobs under the same sidebar category
 
@@ -303,6 +353,8 @@ jobs:
     - allow-failures-n-skips
     - allow-skips
     - allow-partials
+    - action-summary-output-none
+    - action-summary-output-quiet-on-success
     - tests
     if: always()
     runs-on: ubuntu-latest

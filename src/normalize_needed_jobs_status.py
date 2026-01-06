@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 """A helper GitHub Action module that computes the outcome."""
 
+import enum
 import json
 import os
 import pathlib
@@ -14,6 +15,14 @@ _T = _t.TypeVar('_T')
 FILE_APPEND_MODE = 'a'
 
 
+class ActionSummaryOutput(str, enum.Enum):
+    """Behavior for publishing outcome to the GitHub action summary page."""
+
+    ALL = 'all'
+    NONE = 'none'
+    QUIET_ON_SUCCESS = 'quiet-on-success'
+
+
 class ActionJobInputType(_t.TypedDict):  # noqa: D101
     outputs: dict[str, str]
     result: job_outcome.JobResult
@@ -23,6 +32,7 @@ class ActionInputsType(_t.TypedDict):  # noqa: D101
     allowed_failures: list[str]
     allowed_skips: list[str]
     jobs: dict[str, ActionJobInputType]
+    action_summary_output: ActionSummaryOutput
 
 
 def write_lines_to_streams(  # noqa: D103
@@ -79,6 +89,7 @@ def parse_inputs(
     raw_allowed_failures: str,
     raw_allowed_skips: str,
     raw_jobs: str,
+    raw_action_summary: str,
 ) -> ActionInputsType:
     """Normalize the action inputs by turning them into data."""
     allowed_failures_input = drop_empty_from_list(
@@ -92,6 +103,7 @@ def parse_inputs(
         'allowed_failures': allowed_failures_input,
         'allowed_skips': allowed_skips_input,
         'jobs': _t.cast('dict[str, ActionJobInputType]', json.loads(raw_jobs)),
+        'action_summary_output': ActionSummaryOutput(raw_action_summary),
     }
 
 
@@ -139,10 +151,18 @@ def log_decision_details(
     jobs_allowed_to_fail: _t.AbstractSet[str],
     jobs_allowed_to_be_skipped: _t.AbstractSet[str],
     verdicts: list[job_outcome.JobVerdict],
+    action_summary_output: ActionSummaryOutput,
     summary_file: _t.TextIO,
     console_file: _t.TextIO,
 ) -> None:
     """Record the decisions made into console output."""
+    if action_summary_output is ActionSummaryOutput.NONE:
+        publish_to_summary = False
+    elif action_summary_output is ActionSummaryOutput.QUIET_ON_SUCCESS:
+        publish_to_summary = not job_matrix_succeeded
+    else:
+        publish_to_summary = True
+
     allowed_to_fail_jobs_succeeded = all(
         verdict.result == 'success'
         for verdict in verdicts
@@ -195,7 +215,9 @@ def log_decision_details(
 
     write_lines_to_streams(
         markdown_summary_lines,
-        (console_file, summary_file),
+        (console_file, summary_file)
+        if publish_to_summary
+        else (console_file,),
     )
 
     plain_job_lines: list[str] = []
@@ -214,22 +236,29 @@ def log_decision_details(
             ),
         }
 
-    write_lines_to_streams(plain_job_lines, (summary_file,))
+    if publish_to_summary:
+        write_lines_to_streams(plain_job_lines, (summary_file,))
     write_lines_to_streams(console_job_lines, (console_file,))
 
 
 def main(argv: list[str]) -> int:
     """Decide whether the needed jobs got satisfactory results."""
-    inputs = parse_inputs(
-        raw_allowed_failures=argv[1],
-        raw_allowed_skips=argv[2],
-        raw_jobs=argv[3],
-    )
+    try:
+        inputs = parse_inputs(
+            raw_allowed_failures=argv[1],
+            raw_allowed_skips=argv[2],
+            raw_jobs=argv[3],
+            raw_action_summary=argv[4],
+        )
+    except ValueError as exc:
+        write_lines_to_streams((f'::error::{exc}',), (sys.stderr,))
+        return 1
     summary_file_path = pathlib.Path(os.environ['GITHUB_STEP_SUMMARY'])
 
     jobs = inputs['jobs'] or {}
     jobs_allowed_to_fail = set(inputs['allowed_failures'] or [])
     jobs_allowed_to_be_skipped = set(inputs['allowed_skips'] or [])
+    action_summary_output = inputs['action_summary_output']
 
     if not jobs:
         with summary_file_path.open(  # type: ignore[misc]
@@ -266,6 +295,7 @@ def main(argv: list[str]) -> int:
             jobs_allowed_to_fail=jobs_allowed_to_fail,
             jobs_allowed_to_be_skipped=jobs_allowed_to_be_skipped,
             verdicts=verdicts,
+            action_summary_output=action_summary_output,
             summary_file=_t.cast('_t.TextIO', summary_file),
             console_file=_t.cast('_t.TextIO', sys.stderr),
         )

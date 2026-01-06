@@ -234,6 +234,7 @@ def test_smoke(
             allowed_failures,
             allowed_skips,
             jobs,
+            'all',
         ],
     )
     assert helper_return_code == expected_return_code
@@ -249,3 +250,33 @@ def test_smoke(
 
     gh_output_txt = gh_output_path.read_text(encoding='utf-8')
     assert all(line in gh_output_txt for line in expected_outputs)
+
+
+def test_invalid_action_summary_output_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An unsupported `action-summary-output` value exits non-zero."""
+    monkeypatch.setenv(
+        'GITHUB_STEP_SUMMARY',
+        str(tmp_path / 'gh_step_summary'),
+    )
+    monkeypatch.setenv('GITHUB_OUTPUT', str(tmp_path / 'gh_output'))
+
+    helper_return_code = _invoke_helper_cli(
+        [
+            sys.executable,
+            '',
+            '',
+            json.dumps(
+                {'job': {'result': 'success', 'outputs': {}}},
+            ),
+            'bogus',
+        ],
+    )
+    assert helper_return_code == 1
+
+    captured = capsys.readouterr()
+    assert '::error::' in captured.err
+    assert 'ActionSummaryOutput' in captured.err
