@@ -1,0 +1,8 @@
+---
+# yamllint disable rule:truthy
+
+codecov:
+  token: >-  # notsecret  # repo-scoped, upload-only, stability in fork PRs
+    80ed491b-358b-4a76-8940-edacae47b68d
+
+...
