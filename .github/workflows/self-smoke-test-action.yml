@@ -232,6 +232,68 @@ jobs:
     - run: echo 'outputs=${{ toJSON(steps.check.outputs) }}'
       if: always()
 
+  tests:
+    name: 🧪 Tests${{ '' }}  # nest jobs under the same sidebar category
+
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version:
+        # NOTE: The latest and the lowest supported Pythons are prioritized
+        # NOTE: to improve the responsiveness. It's nice to see the most
+        # NOTE: important results first.
+        - 3.14
+        - 3.13
+        - 3.12
+        - 3.11
+        - >-
+          3.10
+        - ~3.15.0-0
+        runner-vm-os:
+        - ubuntu-24.04-arm
+        - ubuntu-24.04
+        toxenv:
+        - py
+        xfail:
+        - false
+
+    uses: tox-dev/workflow/.github/workflows/reusable-tox.yml@617ca35caa695c572377861016677905e58a328c  # yamllint disable-line rule:line-length
+    with:
+      check-name: >-
+        🧪 🐍${{
+          matrix.python-version
+        }} @ ${{
+          matrix.runner-vm-os
+        }}
+      job-dependencies-context: >-  # context for hooks
+        ${{ toJSON(needs) }}
+      python-version: >-
+        ${{ matrix.python-version }}
+      job-dependencies-context: >-  # context for hooks
+        ${{ toJSON(needs) }}
+      runner-vm-os: >-
+        ${{ matrix.runner-vm-os }}
+      timeout-minutes: 2
+      toxenv: >-
+        ${{ matrix.toxenv }}
+      # tox-provision-args: >-
+      #   --force-dep '...'
+      tox-run-posargs: >-
+        --cov-report=xml:.tox/.tmp/.test-results/pytest-${{
+          matrix.python-version
+        }}/cobertura.xml
+        --junitxml=.tox/.tmp/.test-results/pytest-${{
+          matrix.python-version
+        }}/test.xml
+      tox-rerun-posargs: >-
+        --no-cov
+        -vvvvv
+        --lf
+      # tox-tool-deps: tox
+      xfail: false
+    secrets:
+      codecov-token: ${{ secrets.CODECOV_TOKEN }}
+
   check:
     needs:
     - wait-for-success
@@ -242,6 +304,7 @@ jobs:
     - allow-failures-n-skips
     - allow-skips
     - allow-partials
+    - tests
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
