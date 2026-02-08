@@ -48,20 +48,14 @@ runs:
   - name: Decide whether the input jobs succeeded or failed
     id: outcome
     env:
+      INPUT_ALLOWED_FAILURES: ${{ inputs.allowed-failures }}
+      INPUT_ALLOWED_SKIPS: ${{ inputs.allowed-skips }}
+      INPUT_JOBS: ${{ inputs.jobs }}
       PYTHONPATH: ${{ github.action_path }}/src
     run: |
       python -m normalize_needed_jobs_status \
-      "$(cat << EOM
-        ${{ inputs.allowed-failures }}
-      EOM
-      )" \
-      "$(cat << EOM
-        ${{ inputs.allowed-skips }}
-      EOM
-      )" \
-      "$(cat << EOM
-        ${{ inputs.jobs }}
-      EOM
-      )"
+        "$INPUT_ALLOWED_FAILURES" \
+        "$INPUT_ALLOWED_SKIPS" \
+        "$INPUT_JOBS"
     shell: bash
 ...
