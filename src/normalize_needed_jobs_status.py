@@ -173,7 +173,9 @@ def main(argv: list[str]) -> int:
         ) as summary_file:
             write_lines_to_streams(
                 (
-                    '# ❌ Invalid input jobs matrix, '
+                    # NOTE: ISC004 Unparenthesized implicit string
+                    # NOTE: concatenation in collection
+                    '# ❌ Invalid input jobs matrix, '  # noqa: ISC004
                     'please provide a non-empty `needs` context',
                 ),
                 (

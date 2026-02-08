@@ -5,7 +5,7 @@ ci:
 
 repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit.git
-  rev: v0.12.4
+  rev: v0.14.10
   hooks:
   - id: ruff
     args:
@@ -13,19 +13,19 @@ repos:
     - --fix  # NOTE: When `--fix` is used, linting should be before ruff-format
 
 - repo: https://github.com/astral-sh/ruff-pre-commit.git
-  rev: v0.12.4
+  rev: v0.14.10
   hooks:
   - id: ruff-format
     alias: ruff-format-first-pass
     name: ruff-format (first pass)
 
 - repo: https://github.com/asottile/add-trailing-comma.git
-  rev: v3.2.0
+  rev: v4.0.0
   hooks:
   - id: add-trailing-comma
 
 - repo: https://github.com/astral-sh/ruff-pre-commit.git
-  rev: v0.12.4
+  rev: v0.14.10
   hooks:
   - id: ruff-format
     alias: ruff-format-second-pass
@@ -37,7 +37,7 @@ repos:
   - id: remove-tabs
 
 - repo: https://github.com/python-jsonschema/check-jsonschema.git
-  rev: 0.33.2
+  rev: 0.36.0
   hooks:
   - id: check-github-workflows
     files: ^\.github/workflows/[^/]+$
@@ -63,9 +63,10 @@ repos:
   - id: rst-backticks
 
 - repo: https://github.com/pre-commit/pre-commit-hooks.git
-  rev: v5.0.0
+  rev: v6.0.0
   hooks:
   # Side-effects:
+  - id: fix-byte-order-marker
   - id: trailing-whitespace
   - id: check-merge-conflict
   - id: double-quote-string-fixer
@@ -75,7 +76,6 @@ repos:
     files: >-
       ^tests/[^_].*\.py$
   - id: check-added-large-files
-  - id: check-byte-order-marker
   - id: check-case-conflict
   # disabled due to pre-commit/pre-commit-hooks#159
   # - id: check-docstring-first
@@ -111,7 +111,7 @@ repos:
   - id: bashate
 
 - repo: https://github.com/shellcheck-py/shellcheck-py.git
-  rev: v0.10.0.1
+  rev: v0.11.0.1
   hooks:
   - id: shellcheck
 
@@ -121,7 +121,7 @@ repos:
   - id: forbid-html-img-without-alt-text
 
 - repo: https://github.com/pre-commit/mirrors-mypy.git
-  rev: v1.17.0
+  rev: v1.19.1
   hooks:
   - id: mypy
     alias: mypy-py314
