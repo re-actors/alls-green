@@ -269,8 +269,6 @@ jobs:
         ${{ toJSON(needs) }}
       python-version: >-
         ${{ matrix.python-version }}
-      job-dependencies-context: >-  # context for hooks
-        ${{ toJSON(needs) }}
       runner-vm-os: >-
         ${{ matrix.runner-vm-os }}
       timeout-minutes: 2
