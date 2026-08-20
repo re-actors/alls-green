@@ -43,7 +43,6 @@ from normalize_needed_jobs_status import main as _invoke_helper_cli
             {
                 'All of the required dependency jobs succeeded',
                 'Some of the allowed to fail jobs did not succeed',
-                'Some of the allowed to be skipped jobs did not succeed',
                 'failing-job → ❌ failure [allowed to fail]',
                 'succeeding-job → ✓ success [required to succeed]',
                 'skipped-job → ⬜ skipped [allowed to fail]',
@@ -122,7 +121,6 @@ from normalize_needed_jobs_status import main as _invoke_helper_cli
             {
                 'Some of the required to succeed jobs failed',
                 'Some of the allowed to fail jobs did not succeed',
-                'Some of the allowed to be skipped jobs did not succeed',
                 'build-web → ✓ success [required to succeed]',
                 'check-links-book → ✓ success [required to succeed]',
                 'check-links-markdown → ❌ failure [allowed to fail]',

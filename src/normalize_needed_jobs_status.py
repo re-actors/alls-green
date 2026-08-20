@@ -155,7 +155,7 @@ def log_decision_details(
         markdown_summary_lines += {
             '🛈 All of the allowed to be skipped dependency jobs succeeded.',
         }
-    elif jobs_allowed_to_fail:
+    elif jobs_allowed_to_be_skipped:
         markdown_summary_lines += {
             '🛈 Some of the allowed to be skipped jobs did not succeed.',
         }
