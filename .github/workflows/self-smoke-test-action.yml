@@ -112,7 +112,6 @@ jobs:
     needs:
     - failing-job
     - succeeding-job
-    - skipped-job
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -125,7 +124,7 @@ jobs:
       continue-on-error: true
       with:
         allowed-failures: >-
-          ["failing-job", "skipped-job"]
+          ["failing-job"]
         jobs: ${{ toJSON(needs) }}
     - name: Fail on unexpected outcome (assertion step)
       run: exit 1
@@ -137,7 +136,6 @@ jobs:
     needs:
     - failing-job
     - succeeding-job
-    - skipped-job
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -149,7 +147,7 @@ jobs:
       id: check
       continue-on-error: true
       with:
-        allowed-failures: failing-job, skipped-job
+        allowed-failures: failing-job, succeeding-job
         jobs: ${{ toJSON(needs) }}
     - name: Fail on unexpected outcome (assertion step)
       run: exit 1
