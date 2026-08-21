@@ -171,7 +171,7 @@ from normalize_needed_jobs_status import main as _invoke_helper_cli
                     },
                 },
             ),
-            1,
+            0,
             {'failure=false', 'result=success', 'success=true'},
             {
                 'All of the required dependency jobs succeeded',
@@ -180,7 +180,6 @@ from normalize_needed_jobs_status import main as _invoke_helper_cli
                 'failing-job → ❌ failure [allowed to fail]',
             },
             id='success-of-some-allowed-to-skip-or-fail',
-            marks=pytest.mark.xfail(reason='This is a bug to fix'),
         ),
         pytest.param(
             '',
