@@ -95,16 +95,44 @@ def parse_inputs(
     }
 
 
+_STATUS_LABELS: dict[job_outcome.JobRequirement, str] = {
+    job_outcome.JobRequirement.REQUIRED: 'required to succeed',
+    job_outcome.JobRequirement.ALLOWED_TO_FAIL: 'allowed to fail',
+    job_outcome.JobRequirement.ALLOWED_TO_BE_SKIPPED: (
+        'required to succeed or be skipped'
+    ),
+    job_outcome.JobRequirement.ALLOWED_EITHER: 'allowed to fail',
+}
+
+
 def log_decision_details(
+    *,
     job_matrix_succeeded: bool,
-    jobs_allowed_to_fail: _t.Iterable[str],
-    jobs_allowed_to_be_skipped: _t.Iterable[str],
-    allowed_to_fail_jobs_succeeded: bool,
-    allowed_to_be_skipped_jobs_succeeded: bool,
-    jobs: dict[str, ActionJobInputType],
+    jobs_allowed_to_fail: _t.AbstractSet[str],
+    jobs_allowed_to_be_skipped: _t.AbstractSet[str],
+    verdicts: list[job_outcome.JobVerdict],
     summary_file_streams: _t.Iterable[_t.TextIO],
 ) -> None:
     """Record the decisions made into console output."""
+    allowed_to_fail_jobs_succeeded = all(
+        verdict.result == 'success'
+        for verdict in verdicts
+        if verdict.requirement
+        in {
+            job_outcome.JobRequirement.ALLOWED_TO_FAIL,
+            job_outcome.JobRequirement.ALLOWED_EITHER,
+        }
+    )
+    allowed_to_be_skipped_jobs_succeeded = all(
+        verdict.result == 'success'
+        for verdict in verdicts
+        if verdict.requirement
+        in {
+            job_outcome.JobRequirement.ALLOWED_TO_BE_SKIPPED,
+            job_outcome.JobRequirement.ALLOWED_EITHER,
+        }
+    )
+
     markdown_summary_lines: list[str] = []
 
     markdown_summary_lines += {
@@ -135,21 +163,17 @@ def log_decision_details(
     markdown_summary_lines += {
         '📝 Job statuses:',
     }
-    for name, job in jobs.items():
+    for verdict in verdicts:
         markdown_summary_lines += {
             '📝 {name} → {emoji} {result} [{status}]'.format(
                 emoji='✓'
-                if job['result'] == 'success'
+                if verdict.result == 'success'
                 else '❌'
-                if job['result'] == 'failure'
+                if verdict.result == 'failure'
                 else '⬜',
-                name=name,
-                result=job['result'],
-                status='allowed to fail'
-                if name in jobs_allowed_to_fail
-                else 'required to succeed'
-                if name not in jobs_allowed_to_be_skipped
-                else 'required to succeed or be skipped',
+                name=verdict.name,
+                result=verdict.result,
+                status=_STATUS_LABELS[verdict.requirement],
             ),
         }
 
@@ -196,28 +220,14 @@ def main(argv: list[str]) -> int:
     job_matrix_succeeded = all(verdict.acceptable for verdict in verdicts)
     set_final_result_outputs(job_matrix_succeeded)
 
-    allowed_to_fail_jobs_succeeded = all(
-        job['result'] == 'success'
-        for name, job in jobs.items()
-        if name in jobs_allowed_to_fail
-    )
-
-    allowed_to_be_skipped_jobs_succeeded = all(
-        job['result'] == 'success'
-        for name, job in jobs.items()
-        if name in jobs_allowed_to_be_skipped
-    )
-
     with summary_file_path.open(  # type: ignore[misc]
         mode=FILE_APPEND_MODE,
     ) as summary_file:
         log_decision_details(
-            job_matrix_succeeded,
-            jobs_allowed_to_fail,
-            jobs_allowed_to_be_skipped,
-            allowed_to_fail_jobs_succeeded,
-            allowed_to_be_skipped_jobs_succeeded,
-            jobs,
+            job_matrix_succeeded=job_matrix_succeeded,
+            jobs_allowed_to_fail=jobs_allowed_to_fail,
+            jobs_allowed_to_be_skipped=jobs_allowed_to_be_skipped,
+            verdicts=verdicts,
             summary_file_streams=(
                 sys.stderr,
                 _t.cast('_t.TextIO', summary_file),
