@@ -161,7 +161,7 @@ def log_decision_details(
         }
 
     markdown_summary_lines += {
-        '📝 Job statuses:',
+        '🔮 Job statuses:',
     }
     for verdict in verdicts:
         markdown_summary_lines += {
