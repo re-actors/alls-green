@@ -1,3 +1,5 @@
+[![pre-commit.ci status badge]][pre-commit.ci results page]
+
 # alls-green
 
 A check for whether the dependency jobs are all green.
@@ -208,6 +210,12 @@ to be.
 
 The contents of this project is released under the
 [BSD 3-clause license].
+
+
+[pre-commit.ci results page]:
+https://results.pre-commit.ci/latest/github/re-actors/alls-green/unstable/v1
+[pre-commit.ci status badge]:
+https://results.pre-commit.ci/badge/github/re-actors/alls-green/unstable/v1.svg
 
 
 [aiohttp]: https://github.com/aio-libs/aiohttp
