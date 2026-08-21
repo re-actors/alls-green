@@ -7,6 +7,8 @@ import pathlib
 import sys
 import typing as _t
 
+import job_outcome
+
 
 _T = _t.TypeVar('_T')
 FILE_APPEND_MODE = 'a'
@@ -14,7 +16,7 @@ FILE_APPEND_MODE = 'a'
 
 class ActionJobInputType(_t.TypedDict):  # noqa: D101
     outputs: dict[str, str]
-    result: _t.Literal['success', 'failure', 'cancelled', 'skipped']
+    result: job_outcome.JobResult
 
 
 class ActionInputsType(_t.TypedDict):  # noqa: D101
@@ -185,15 +187,13 @@ def main(argv: list[str]) -> int:
             )
         return 1
 
-    job_matrix_succeeded = all(
-        job['result'] == 'success'
-        for name, job in jobs.items()
-        if name not in (jobs_allowed_to_fail | jobs_allowed_to_be_skipped)
-    ) and all(
-        job['result'] in {'skipped', 'success'}
-        for name, job in jobs.items()
-        if name in jobs_allowed_to_be_skipped
+    job_results = {name: job['result'] for name, job in jobs.items()}
+    verdicts = job_outcome.evaluate_jobs(
+        jobs=job_results,
+        jobs_allowed_to_fail=jobs_allowed_to_fail,
+        jobs_allowed_to_be_skipped=jobs_allowed_to_be_skipped,
     )
+    job_matrix_succeeded = all(verdict.acceptable for verdict in verdicts)
     set_final_result_outputs(job_matrix_succeeded)
 
     allowed_to_fail_jobs_succeeded = all(
