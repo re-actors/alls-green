@@ -1,5 +1,6 @@
 [![pre-commit.ci status badge]][pre-commit.ci results page]
 [![GH Sponsors badge]][GH Sponsors URL]
+[![Codecov Badge]][Codecov]
 
 # alls-green
 
@@ -217,6 +218,9 @@ The contents of this project is released under the
 https://results.pre-commit.ci/latest/github/re-actors/alls-green/unstable/v1
 [pre-commit.ci status badge]:
 https://results.pre-commit.ci/badge/github/re-actors/alls-green/unstable/v1.svg
+
+[Codecov Badge]: https://codecov.io/gh/re-actors/alls-green/graph/badge.svg
+[Codecov]: https://app.codecov.io/gh/re-actors/alls-green
 
 [GH Sponsors badge]:
 https://img.shields.io/badge/%40webknjaz-transparent?logo=githubsponsors&logoColor=%23EA4AAA&label=Sponsor&color=2a313c
