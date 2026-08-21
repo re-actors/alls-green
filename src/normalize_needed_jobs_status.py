@@ -104,6 +104,34 @@ _STATUS_LABELS: dict[job_outcome.JobRequirement, str] = {
     job_outcome.JobRequirement.ALLOWED_EITHER: 'allowed to fail',
 }
 
+_RESULT_SYMBOLS: dict[job_outcome.JobResult, str] = {
+    'success': '🟢',
+    'failure': '🔴',
+    'skipped': '⬜',
+    'cancelled': '⚫',
+}
+
+_ANSI_GREEN = '\x1b[32m'
+_ANSI_RED = '\x1b[31m'
+_ANSI_RESET = '\x1b[0m'
+
+
+def _ansi_color_enabled() -> bool:
+    """Decide whether to colorize console output.
+
+    Respects `https://no-color.org`__: presence of :envvar:`NO_COLOR`
+    disables color regardless of its value.
+    """
+    return 'NO_COLOR' not in os.environ
+
+
+def _colorize_line(*, text: str, acceptable: bool) -> str:
+    """Wrap a whole line in ANSI color if enabled, based on acceptability."""
+    if not _ansi_color_enabled():
+        return text
+    color = _ANSI_GREEN if acceptable else _ANSI_RED
+    return f'{color}{text}{_ANSI_RESET}'
+
 
 def log_decision_details(
     *,
@@ -111,7 +139,8 @@ def log_decision_details(
     jobs_allowed_to_fail: _t.AbstractSet[str],
     jobs_allowed_to_be_skipped: _t.AbstractSet[str],
     verdicts: list[job_outcome.JobVerdict],
-    summary_file_streams: _t.Iterable[_t.TextIO],
+    summary_file: _t.TextIO,
+    console_file: _t.TextIO,
 ) -> None:
     """Record the decisions made into console output."""
     allowed_to_fail_jobs_succeeded = all(
@@ -163,21 +192,30 @@ def log_decision_details(
     markdown_summary_lines += {
         '🔮 Job statuses:',
     }
+
+    write_lines_to_streams(
+        markdown_summary_lines,
+        (console_file, summary_file),
+    )
+
+    plain_job_lines: list[str] = []
+    console_job_lines: list[str] = []
     for verdict in verdicts:
-        markdown_summary_lines += {
-            '📝 {name} → {emoji} {result} [{status}]'.format(
-                emoji='✓'
-                if verdict.result == 'success'
-                else '❌'
-                if verdict.result == 'failure'
-                else '⬜',
-                name=verdict.name,
-                result=verdict.result,
-                status=_STATUS_LABELS[verdict.requirement],
+        plain_verdict_line = (
+            f'{"✓" if verdict.acceptable else "❌"} '
+            f'{verdict.name} → {_RESULT_SYMBOLS[verdict.result]} '
+            f'{verdict.result} [{_STATUS_LABELS[verdict.requirement]}]'
+        )
+        plain_job_lines += {plain_verdict_line}
+        console_job_lines += {
+            _colorize_line(
+                text=plain_verdict_line,
+                acceptable=verdict.acceptable,
             ),
         }
 
-    write_lines_to_streams(markdown_summary_lines, summary_file_streams)
+    write_lines_to_streams(plain_job_lines, (summary_file,))
+    write_lines_to_streams(console_job_lines, (console_file,))
 
 
 def main(argv: list[str]) -> int:
@@ -228,10 +266,8 @@ def main(argv: list[str]) -> int:
             jobs_allowed_to_fail=jobs_allowed_to_fail,
             jobs_allowed_to_be_skipped=jobs_allowed_to_be_skipped,
             verdicts=verdicts,
-            summary_file_streams=(
-                sys.stderr,
-                _t.cast('_t.TextIO', summary_file),
-            ),
+            summary_file=_t.cast('_t.TextIO', summary_file),
+            console_file=_t.cast('_t.TextIO', sys.stderr),
         )
 
     return int(not job_matrix_succeeded)
