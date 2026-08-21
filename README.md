@@ -1,4 +1,5 @@
 [![pre-commit.ci status badge]][pre-commit.ci results page]
+[![GH Sponsors badge]][GH Sponsors URL]
 
 # alls-green
 
@@ -216,6 +217,11 @@ The contents of this project is released under the
 https://results.pre-commit.ci/latest/github/re-actors/alls-green/unstable/v1
 [pre-commit.ci status badge]:
 https://results.pre-commit.ci/badge/github/re-actors/alls-green/unstable/v1.svg
+
+[GH Sponsors badge]:
+https://img.shields.io/badge/%40webknjaz-transparent?logo=githubsponsors&logoColor=%23EA4AAA&label=Sponsor&color=2a313c
+[GH Sponsors URL]:
+https://github.com/sponsors/webknjaz
 
 
 [aiohttp]: https://github.com/aio-libs/aiohttp
