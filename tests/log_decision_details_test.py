@@ -4,8 +4,11 @@ import io
 
 import pytest
 
-from job_outcome import JobRequirement, JobVerdict
-from normalize_needed_jobs_status import log_decision_details
+from job_outcome import JobRequirement, JobResult, JobVerdict
+from normalize_needed_jobs_status import (
+    ActionSummaryOutput,
+    log_decision_details,
+)
 
 
 @pytest.fixture
@@ -46,12 +49,14 @@ def _invoke(
     verdicts: list[JobVerdict],
     summary_file: io.StringIO,
     console_file: io.StringIO,
+    action_summary_output: ActionSummaryOutput = ActionSummaryOutput.ALL,
 ) -> None:
     log_decision_details(
         job_matrix_succeeded=all(verdict.acceptable for verdict in verdicts),
         jobs_allowed_to_fail=frozenset(),
         jobs_allowed_to_be_skipped=frozenset(),
         verdicts=verdicts,
+        action_summary_output=action_summary_output,
         summary_file=summary_file,
         console_file=console_file,
     )
@@ -258,3 +263,73 @@ def test_console_is_colorized_unless_no_color(
             '\x1b[31m❌ job → 🔴 failure [required to succeed]\x1b[0m'
             in console_text
         )
+
+
+@pytest.mark.parametrize(
+    ('action_summary_output', 'result', 'expect_summary'),
+    (
+        pytest.param(
+            ActionSummaryOutput.ALL,
+            'success',
+            True,
+            id='all-success',
+        ),
+        pytest.param(
+            ActionSummaryOutput.ALL,
+            'failure',
+            True,
+            id='all-failure',
+        ),
+        pytest.param(
+            ActionSummaryOutput.NONE,
+            'success',
+            False,
+            id='none-success',
+        ),
+        pytest.param(
+            ActionSummaryOutput.NONE,
+            'failure',
+            False,
+            id='none-failure',
+        ),
+        pytest.param(
+            ActionSummaryOutput.QUIET_ON_SUCCESS,
+            'success',
+            False,
+            id='quiet-on-success-success',
+        ),
+        pytest.param(
+            ActionSummaryOutput.QUIET_ON_SUCCESS,
+            'failure',
+            True,
+            id='quiet-on-success-failure',
+        ),
+    ),
+)
+def test_action_summary_output_routes_to_summary(
+    action_summary_output: ActionSummaryOutput,
+    result: JobResult,
+    expect_summary: bool,
+    summary_file: io.StringIO,
+    console_file: io.StringIO,
+) -> None:
+    """The summary stream only gets content per the routing option."""
+    acceptable = result == 'success'
+    _invoke(
+        verdicts=[
+            JobVerdict(
+                name='job',
+                result=result,
+                requirement=JobRequirement.REQUIRED,
+                acceptable=acceptable,
+            ),
+        ],
+        summary_file=summary_file,
+        console_file=console_file,
+        action_summary_output=action_summary_output,
+    )
+    summary_text = summary_file.getvalue()
+    if expect_summary:
+        assert summary_text
+    else:
+        assert not summary_text
