@@ -28,7 +28,7 @@ def no_color(
     """Indirect fixture: toggle NO_COLOR based on the parametrized value.
 
     :raises: TypeError
-    """  # noqa: DOC501
+    """  # ruff: ignore[docstring-missing-exception]
     enabled = request.param
     if not isinstance(enabled, bool):  # pragma: no cover
         exc_msg = 'Type narrowing the param for MyPy'
@@ -220,7 +220,7 @@ _SAMPLE_UNACCEPTABLE_VERDICTS = [
     ids=('no-color', 'color'),
 )
 def test_summary_is_always_plain_regardless_of_no_color(
-    no_color: bool,  # noqa: ARG001  # monkey-patches env vars under the hood
+    no_color: bool,  # ruff: ignore[unused-function-argument]  # monkey-patches env vars under the hood
     summary_file: io.StringIO,
     console_file: io.StringIO,
 ) -> None:
