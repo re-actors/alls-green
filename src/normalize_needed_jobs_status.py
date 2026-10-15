@@ -109,11 +109,17 @@ _RESULT_SYMBOLS: dict[job_outcome.JobResult, str] = {
     'failure': '🔴',
     'skipped': '⬜',
     'cancelled': '⚫',
+    None: '❔',
 }
 
 _ANSI_GREEN = '\x1b[32m'
 _ANSI_RED = '\x1b[31m'
 _ANSI_RESET = '\x1b[0m'
+
+
+def _result_label(result: job_outcome.JobResult) -> str:
+    """Return a user-facing label for a job result."""
+    return 'unknown' if result is None else result
 
 
 def _ansi_color_enabled() -> bool:
@@ -204,7 +210,8 @@ def log_decision_details(
         plain_verdict_line = (
             f'{"✓" if verdict.acceptable else "❌"} '
             f'{verdict.name} → {_RESULT_SYMBOLS[verdict.result]} '
-            f'{verdict.result} [{_STATUS_LABELS[verdict.requirement]}]'
+            f'{_result_label(verdict.result)} '
+            f'[{_STATUS_LABELS[verdict.requirement]}]'
         )
         plain_job_lines += {plain_verdict_line}
         console_job_lines += {
