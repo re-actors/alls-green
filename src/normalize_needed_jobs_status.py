@@ -14,18 +14,18 @@ _T = _t.TypeVar('_T')
 FILE_APPEND_MODE = 'a'
 
 
-class ActionJobInputType(_t.TypedDict):  # noqa: D101
+class ActionJobInputType(_t.TypedDict):  # ruff: ignore[undocumented-public-class]
     outputs: dict[str, str]
     result: job_outcome.JobResult
 
 
-class ActionInputsType(_t.TypedDict):  # noqa: D101
+class ActionInputsType(_t.TypedDict):  # ruff: ignore[undocumented-public-class]
     allowed_failures: list[str]
     allowed_skips: list[str]
     jobs: dict[str, ActionJobInputType]
 
 
-def write_lines_to_streams(  # noqa: D103
+def write_lines_to_streams(  # ruff: ignore[undocumented-public-function]
     lines: _t.Iterable[str],
     streams: _t.Iterable[_t.TextIO],
 ) -> None:
@@ -71,7 +71,7 @@ def parse_as_list(input_text: str) -> list[str]:
         return [s.strip() for s in input_text.split(',')]
 
 
-def drop_empty_from_list(a_list: _t.Iterable[_T]) -> list[_T]:  # noqa: D103
+def drop_empty_from_list(a_list: _t.Iterable[_T]) -> list[_T]:  # ruff: ignore[undocumented-public-function]
     return [list_element for list_element in a_list if list_element]
 
 
@@ -239,7 +239,7 @@ def main(argv: list[str]) -> int:
                 (
                     # NOTE: ISC004 Unparenthesized implicit string
                     # NOTE: concatenation in collection
-                    '# ❌ Invalid input jobs matrix, '  # noqa: ISC004
+                    '# ❌ Invalid input jobs matrix, '  # ruff: ignore[implicit-string-concatenation-in-collection-literal]
                     'please provide a non-empty `needs` context',
                 ),
                 (
