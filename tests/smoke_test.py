@@ -209,6 +209,25 @@ from normalize_needed_jobs_status import main as _invoke_helper_cli
             {'Invalid input jobs matrix'},
             id='failure-due-to-empty-jobs',
         ),
+        pytest.param(
+            '',
+            '',
+            json.dumps(
+                {
+                    'ansible-lint': {
+                        'result': 'abandoned',
+                        'outputs': {},
+                    },
+                },
+            ),
+            1,
+            {'failure=true', 'result=failure', 'success=false'},
+            {
+                'Some of the required to succeed jobs failed',
+                '❌ ansible-lint → ⚫ abandoned [required to succeed]',
+            },
+            id='failure-due-to-abandoned-job',
+        ),
     ),
 )
 def test_smoke(

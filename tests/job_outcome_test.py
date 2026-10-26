@@ -12,7 +12,7 @@ from job_outcome import (
 )
 
 
-ALL_RESULTS = ('success', 'failure', 'cancelled', 'skipped')
+ALL_RESULTS = ('success', 'failure', 'cancelled', 'skipped', 'abandoned')
 
 # What the README (allowed-failures/allowed-skips semantics) and the
 # pre-regression v1.2.2 behavior say should be acceptable for each policy:
