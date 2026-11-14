@@ -30,6 +30,18 @@ inputs:
       Job names that are allowed to be skipped and not affect the
       outcome, as a comma-separated list or serialized as a JSON string
     required: false
+  action-summary-output:
+    default: >-
+      all
+    description: |-
+      Behavior to use for publishing outcome to the Github action summary page
+
+      Available Options:
+        all              - results shown in both stderr and action status.
+        none             - results shown only in stderr.
+        quiet-on-success - matrix success only shown in stderr, all other
+                           output follows same behavior as 'all'.
+    required: false
 
 outputs:
   failure:
@@ -48,6 +60,7 @@ runs:
   - name: Decide whether the input jobs succeeded or failed
     id: outcome
     env:
+      INPUT_ACTION_SUMMARY_OUTPUT: ${{ inputs.action-summary-output }}
       INPUT_ALLOWED_FAILURES: ${{ inputs.allowed-failures }}
       INPUT_ALLOWED_SKIPS: ${{ inputs.allowed-skips }}
       INPUT_JOBS: ${{ inputs.jobs }}
@@ -56,6 +69,8 @@ runs:
       python -m normalize_needed_jobs_status \
         "$INPUT_ALLOWED_FAILURES" \
         "$INPUT_ALLOWED_SKIPS" \
-        "$INPUT_JOBS"
+        "$INPUT_JOBS" \
+        "$INPUT_ACTION_SUMMARY_OUTPUT"
+
     shell: bash
 ...
