@@ -14,20 +14,18 @@ Read, in this order:
 
 Here:
 
-1. `pyproject.toml` (build backend and metadata).
-2. `src/pylibsshext/<module>.pyx` and its `.pxd`; libssh
-   declarations live under `src/pylibsshext/includes/`.
-3. `tests/conftest.py` (e.g. the `sshd_addr` fixture), then
-   `tests/unit/<module>_test.py` or `tests/integration/`.
-4. As above.
-5. `.github/workflows/ci-cd.yml`, with the `reusable-*.yml`
-   workflows it calls.
+1. `action.yml` -- the composite action's inputs and the step
+   running the helper. `pyproject.toml` only holds the testing
+   dependency group; there's no packaging metadata.
+2. `src/normalize_needed_jobs_status.py`, the helper the action
+   runs, and `src/job_outcome.py`.
+3. There's no `tests/conftest.py`; go straight to
+   `tests/<topic>_test.py`.
+4. As above -- `tox.ini` only has the `py` env, and the linters run
+   through `pre-commit` directly.
+5. `.github/workflows/self-smoke-test-action.yml`, which runs the
+   action on itself.
 
 Other places worth knowing:
 
-- `packaging/pep517_backend/` -- the in-tree PEP 517 build backend.
-- `packaging/rpm/` -- RPM packaging, used by `.packit.yml`.
-- `build-scripts/manylinux-container-image/` -- the manylinux
-  images wheels are built in.
-- `docs/` -- Sphinx docs (RST); change notes go under
-  `docs/changelog-fragments/`.
+- `README.md` -- the user-facing documentation.
