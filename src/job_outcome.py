@@ -5,7 +5,7 @@ import enum
 import typing as _t
 
 
-JobResult = _t.Literal['success', 'failure', 'cancelled', 'skipped']
+JobResult = _t.Literal['success', 'failure', 'cancelled', 'skipped'] | None
 
 
 class JobRequirement(enum.Enum):

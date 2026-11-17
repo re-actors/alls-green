@@ -108,6 +108,18 @@ def _invoke(
             '⚫',
             id='cancelled',
         ),
+        pytest.param(
+            [
+                JobVerdict(
+                    name='job',
+                    result=None,
+                    requirement=JobRequirement.REQUIRED,
+                    acceptable=False,
+                ),
+            ],
+            '❔',
+            id='unknown',
+        ),
     ),
 )
 def test_result_symbol_appears_in_summary(
@@ -201,6 +213,29 @@ def test_accept_mark_follows_acceptable_not_result(
     summary_text = summary_file.getvalue()
     assert expected_mark in summary_text
     assert unexpected_mark not in summary_text
+
+
+def test_unknown_result_is_labeled_in_summary(
+    summary_file: io.StringIO,
+    console_file: io.StringIO,
+) -> None:
+    """An unset GitHub Actions result is rendered as an unknown status."""
+    _invoke(
+        verdicts=[
+            JobVerdict(
+                name='job',
+                result=None,
+                requirement=JobRequirement.REQUIRED,
+                acceptable=False,
+            ),
+        ],
+        summary_file=summary_file,
+        console_file=console_file,
+    )
+
+    assert (
+        '❌ job → ❔ unknown [required to succeed]' in summary_file.getvalue()
+    )
 
 
 _SAMPLE_UNACCEPTABLE_VERDICTS = [
