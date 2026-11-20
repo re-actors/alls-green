@@ -108,6 +108,18 @@ def _invoke(
             '⚫',
             id='cancelled',
         ),
+        pytest.param(
+            [
+                JobVerdict(
+                    name='job',
+                    result='abandoned',
+                    requirement=JobRequirement.REQUIRED,
+                    acceptable=False,
+                ),
+            ],
+            '⚫',
+            id='abandoned',
+        ),
     ),
 )
 def test_result_symbol_appears_in_summary(

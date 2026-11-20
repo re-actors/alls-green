@@ -109,6 +109,7 @@ _RESULT_SYMBOLS: dict[job_outcome.JobResult, str] = {
     'failure': '🔴',
     'skipped': '⬜',
     'cancelled': '⚫',
+    'abandoned': '⚫',
 }
 
 _ANSI_GREEN = '\x1b[32m'
